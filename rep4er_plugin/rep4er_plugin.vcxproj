@@ -251,7 +251,7 @@
     <OutDir>C:\_Reaper_LOCAL\UserPlugins</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\JUCE\modules;C:\Users\SimonGumbleton\Projects\vcpkg-master\vcpkg-master\installed\x64-windows\include;D:\Dev\PersonalProjects\ReP4er\rep4er_plugin\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\JUCE\modules;$(ProjectDir)\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\SimonGumbleton\Projects\vcpkg-master\vcpkg-master\installed\x64-windows\lib;$(LibraryPath)</LibraryPath>
     <OutDir>C:\_Reaper_Local\UserPlugins</OutDir>
     <IntDir>reaper_rep4er.dir\x64\Release\</IntDir>
