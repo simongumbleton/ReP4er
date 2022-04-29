@@ -62,6 +62,8 @@
     <ClInclude Include="include\GUI.h" />
     <ClInclude Include="include\JUCE\AppConfig.h" />
     <ClInclude Include="include\JUCE\JuceHeader.h" />
+    <ClInclude Include="include\p4v_helper.h" />
+    <ClInclude Include="include\p4\clientapi.h" />
     <ClInclude Include="include\reaper_plugin.h" />
     <ClInclude Include="include\reaper_plugin_functions.h" />
   </ItemGroup>
@@ -669,9 +671,8 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>p4api\libclient.lib;p4api\libp4api.lib;p4api\libp4script.lib;p4api\librpc.lib;p4api\libsupp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>$(SolutionDir)/Build/x64/Release/reaper_simonsreaperplugin_x64.lib</ImportLibrary>

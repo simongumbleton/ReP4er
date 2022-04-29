@@ -15,6 +15,8 @@
 #include "reaper_plugin.h"
 #include "reaper_plugin_functions.h"
 
+#include "p4v_helper.h"
+
 #define REAPERAPI_DECL
 REAPER_PLUGIN_HINSTANCE g_hInst;
 

@@ -10,6 +10,9 @@
     <Filter Include="include\JUCE">
       <UniqueIdentifier>{6f14db33-0c2f-42a6-8164-c7ee04292e98}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\p4">
+      <UniqueIdentifier>{3db9c44d-88cf-4571-b7f6-d2c6ac3b51de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\reaper_plugin.h">
@@ -26,6 +29,12 @@
     </ClInclude>
     <ClInclude Include="include\JUCE\JuceHeader.h">
       <Filter>include\JUCE</Filter>
+    </ClInclude>
+    <ClInclude Include="include\p4\clientapi.h">
+      <Filter>include\p4</Filter>
+    </ClInclude>
+    <ClInclude Include="include\p4v_helper.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
