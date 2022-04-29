@@ -396,3 +396,11 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+libs/p4api/libclient.lib
+libs/p4api/libp4api.lib
+libs/p4api/libp4script.lib
+libs/p4api/libp4script_c.lib
+libs/p4api/libp4script_curl.lib
+libs/p4api/libp4script_sqlite.lib
+libs/p4api/librpc.lib
+libs/p4api/libsupp.lib
