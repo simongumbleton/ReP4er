@@ -27,9 +27,21 @@
     <ClInclude Include="include\GUI.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\platformhelpers.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\reaperHelpers.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platformhelpers.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reaperHelpers.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

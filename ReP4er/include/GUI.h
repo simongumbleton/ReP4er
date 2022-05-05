@@ -1,5 +1,5 @@
 #pragma once
-#include "JUCE/JuceHeader.h"
+#include "JuceHeader.h"
 
 
 /** Just a simple window that deletes itself when closed. */
@@ -118,7 +118,6 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainWindow)
 };
 
-using namespace CreateTransfer;
 //Base class for the main component for transfer behaviour to wwise
 
 class BaseWwiseGuiComponent : public juce::Component, public juce::Button::Listener, public juce::ComboBox::Listener, public juce::Label::Listener
@@ -127,7 +126,7 @@ public:
 	
 	BaseWwiseGuiComponent()
 	{
-		txt_pluginVersion->setText(GetPluginVersionString(), juce::NotificationType::dontSendNotification);
+	//	txt_pluginVersion->setText(GetPluginVersionString(), juce::NotificationType::dontSendNotification);
 	};
 	~BaseWwiseGuiComponent()
 	{

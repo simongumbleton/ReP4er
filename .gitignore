@@ -39,3 +39,12 @@ JUCE/Builds/VisualStudio2022/.vs/JuceLib/v17/.suo
 JUCE/Builds/VisualStudio2022/.vs/JuceLib/v17/Browse.VC.db
 JUCE/Builds/VisualStudio2022/.vs/JuceLib/v17/fileList.bin
 JUCE/Builds/VisualStudio2022/.vs/JuceLib/v17/ipch/AutoPCH/db45f3717546bbcc/INCLUDE_JUCE_GRAPHICS.ipch
+.vs/ReP4er/v17/ipch/AutoPCH/1f0aa5a5bc06b02d/REAPERHELPERS.ipch
+.vs/ReP4er/v17/ipch/AutoPCH/2da7f5bad5986a45/PLATFORMHELPERS.ipch
+.vs/ReP4er/v17/ipch/AutoPCH/75c06ba8e743b360/MAIN.ipch
+.vs/ReP4er/v17/ipch/AutoPCH/ec3cee97e875fc12/MAIN.ipch
+.vs/ReP4er/v17/Solution.VC.db
+Intermidiate/Debug/platformhelpers.obj
+Intermidiate/Debug/reaperHelpers.obj
+Intermidiate/Release/platformhelpers.obj
+Intermidiate/Release/reaperHelpers.obj
