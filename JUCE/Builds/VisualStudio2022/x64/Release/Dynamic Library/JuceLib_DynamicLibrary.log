@@ -1,0 +1,9 @@
+﻿  include_juce_core.cpp
+  include_juce_data_structures.cpp
+  include_juce_events.cpp
+  include_juce_graphics.cpp
+  include_juce_gui_extra.cpp
+  include_juce_gui_basics.cpp
+  Generating code
+  Finished generating code
+  JuceLib_DynamicLibrary.vcxproj -> D:\Dev\PersonalProjects\JuceLib\JuceLib\Builds\VisualStudio2022\x64\Release\Dynamic Library\JuceLib.dll
