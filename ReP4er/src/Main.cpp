@@ -24,6 +24,7 @@
 
 #include "reaperHelpers.h"
 #include "platformhelpers.h"
+#include "p4v_helper.h"
 
 
 REAPER_PLUGIN_HINSTANCE g_hInst;
@@ -97,6 +98,14 @@ extern "C"
 #endif
 
 		}
+		P4V::SetCWD(GetExePath());
+		P4V::SetCWD("D:\\CASoundP4\\CASound");
+		//PrintToConsole(P4V::execCmd_GetOutput("echo hello world"));
+		PrintToConsole(P4V::GetCWD());
+		
+		p4Info* info = P4V::getP4Info();
+		PrintToConsole(info->properties["User name"]);
+
 		return 1;
 	}
 }

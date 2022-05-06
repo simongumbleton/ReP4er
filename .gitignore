@@ -48,3 +48,24 @@ Intermidiate/Debug/platformhelpers.obj
 Intermidiate/Debug/reaperHelpers.obj
 Intermidiate/Release/platformhelpers.obj
 Intermidiate/Release/reaperHelpers.obj
+.vs/ReP4er/v17/ipch/AutoPCH/2d9bc042300b7619/P4V_HELPER.ipch
+.vs/ReP4er/v17/ipch/AutoPCH/661124d09e80cdc/P4V_HELPER.ipch
+.vs/ReP4er/v17/ipch/AutoPCH/8b8270ade9ab5dd2/P4V_HELPER.ipch
+.vs/ReP4er/v17/ipch/AutoPCH/b0ca8bb8ebdb32fb/PLATFORMHELPERS.ipch
+Intermidiate/Release/p4v_helper.obj
+Build/x64/Debug/reaper_rep4er_x64.pdb
+Intermidiate/Debug/p4v_helper.obj
+*.obj
+*.pdb
+*.tlog
+*.log
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/include_juce_core.obj
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/include_juce_data_structures.obj
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/include_juce_events.obj
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/include_juce_graphics.obj
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/include_juce_gui_basics.obj
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/include_juce_gui_extra.obj
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/JuceLib.Build.CppClean.log
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/JuceLib.pdb
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/JuceLib_.538C7304.tlog/CL.read.1.tlog
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/JuceLib_.538C7304.tlog/CL.write.1.tlog
