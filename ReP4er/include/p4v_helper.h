@@ -42,7 +42,7 @@ namespace P4V
 
 	void reopenDirectory(std::string dirPath, std::string extenstion = "");
 
-	void submitChanges(int changeList, bool deleteIfEmpty=true);
+	void submitChanges(int changeList=0, bool deleteIfEmpty=true);
 
 	bool doesChangelistHaveFiles(int changeList);
 

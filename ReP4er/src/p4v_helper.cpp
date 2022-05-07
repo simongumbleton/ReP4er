@@ -134,9 +134,10 @@ int P4V::createChangelist(std::string description)
     auto splitResult = PLATFORMHELPERS::stringSplitToList(result, " ");
     if (splitResult.size() == 3) //Change 2831 created.
     {
-        int CL = std::stoi(splitResult[1]);
-        return CL;
+        currentChangelist = std::stoi(splitResult[1]);
+        return currentChangelist;
     }
+    currentChangelist = 0;
     return 0;
 }
 
@@ -173,51 +174,229 @@ int P4V::findChangelistByDescription(std::string description)
 void P4V::checkoutDirectory(std::string dirPath, std::string extenstion)
 {
     using namespace P4V;
+    if (currentChangelist == 0)
+    {
+        createChangelist(defaultdesc);
+    }
+    if (extenstion.empty())
+    {
+        dirPath += R"(...)";
+    }
+    else
+    {
+        auto type = PLATFORMHELPERS::stringReplace(extenstion, ".", "");
+        dirPath += R"(.../*.)" + type;
+    }
+    std::string command1 = R"(p4 edit -c )"
+        + std::to_string(currentChangelist)
+        + R"( ")" + dirPath + R"(")";
+    execCmd(command1);
 }
 
 void P4V::checkoutFiles(std::vector<std::string> fileList)
 {
     using namespace P4V;
+    if (currentChangelist == 0)
+    {
+        createChangelist(defaultdesc);
+    }
+    for (auto file : fileList)
+    {
+        std::string command1 = R"(p4 edit -c )"
+            + std::to_string(currentChangelist)
+            + R"( ")" + file + R"(")";
+        execCmd(command1);
+        std::string command2 = R"(p4 reconcile -c )"
+            + std::to_string(currentChangelist)
+            + R"( ")" + file + R"(")";
+        execCmd(command2);
+        std::string command3 = R"(p4 reopen -c )"
+            + std::to_string(currentChangelist)
+            + R"( ")" + file + R"(")";
+        execCmd(command3);
+    }
 }
 
 void P4V::reconcileDirectory(std::string dirPath, std::string extenstion)
 {
     using namespace P4V;
+    if (currentChangelist == 0)
+    {
+        createChangelist(defaultdesc);
+    }
+    if (extenstion.empty())
+    {
+        dirPath += R"(...)";
+    }
+    else
+    {
+        auto type = PLATFORMHELPERS::stringReplace(extenstion, ".", "");
+        dirPath += R"(.../*.)" + type;
+    }
+    std::string command1 = R"(p4 reconcile -c )"
+        + std::to_string(currentChangelist)
+        + R"( ")" + dirPath + R"(")";
+    execCmd(command1);
 }
 
 void P4V::reopenDirectory(std::string dirPath, std::string extenstion)
 {
     using namespace P4V;
+    if (currentChangelist == 0)
+    {
+        createChangelist(defaultdesc);
+    }
+    if (extenstion.empty())
+    {
+        dirPath += R"(...)";
+    }
+    else
+    {
+        auto type = PLATFORMHELPERS::stringReplace(extenstion, ".", "");
+        dirPath += R"(.../*.)" + type;
+    }
+    std::string command1 = R"(p4 reopen -c )"
+        + std::to_string(currentChangelist)
+        + R"( ")" + dirPath + R"(")";
+    execCmd(command1);
 }
 
 void P4V::submitChanges(int changeList, bool deleteIfEmpty)
 {
     using namespace P4V;
+    if (changeList == 0)
+    {
+        if (currentChangelist == 0)
+        {
+            createChangelist(defaultdesc);
+        }
+        changeList = currentChangelist;
+    }
+    if (doesChangelistHaveFiles(changeList))
+    {
+        std::string command1 = "p4 submit -c " + std::to_string(changeList);
+        execCmd(command1);
+    }
+    else if (deleteIfEmpty)
+    {
+        deleteChangelist(changeList);
+    }
 }
 
 bool P4V::doesChangelistHaveFiles(int changeList)
 {
     using namespace P4V;
-    return false;
+    bool hasFiles = false;
+    if (changeList == 0)
+    {
+        if (currentChangelist == 0)
+        {
+            createChangelist(defaultdesc);
+        }
+        changeList = currentChangelist;
+    }
+    std::string command1 = "p4 opened -c " + std::to_string(changeList);
+    auto result = execCmd_GetOutput(command1);
+    if (result.find("File(s) not opened on this client.") != result.npos)
+    {
+        hasFiles = false;
+    }
+    else {
+        hasFiles = true;
+    }
+
+    return hasFiles;
 }
 
 void P4V::deleteChangelist(int changeList)
 {
     using namespace P4V;
+    if (changeList == 0)
+    {
+        if (currentChangelist == 0)
+        {
+            createChangelist(defaultdesc);
+        }
+        changeList = currentChangelist;
+    }
+    if (!doesChangelistHaveFiles(changeList))
+    {
+        std::string command1 = "p4 change -d " + std::to_string(changeList);
+        execCmd(command1);
+    }
 }
 
 void P4V::revertUnchangedFilesInDir(std::string path)
 {
     using namespace P4V;
+    path += R"(...)";
+    std::string command1 = R"(p4 revert -a ")" + path + R"(")";
+    execCmd(command1);
+
 }
 
 void P4V::revertUnchangedFiles(std::vector<std::string> fileList)
 {
     using namespace P4V;
+    for (auto file : fileList)
+    {
+        std::string command1 = R"(p4 revert -a ")" + file + R"(")";
+        execCmd(command1);
+    }
 }
 
 std::vector<std::string> P4V::getFilesInChangelist(int changeList, std::string extension)
 {
     using namespace P4V;
-    return std::vector<std::string>();
+    std::vector<std::string> files;
+    if (changeList == 0)
+    {
+        if (currentChangelist == 0)
+        {
+            createChangelist(defaultdesc);
+        }
+        changeList = currentChangelist;
+    }
+    if (doesChangelistHaveFiles(changeList))
+    {
+        std::string command1 = R"(p4 opened -s -c )" + std::to_string(changeList);
+        auto result = execCmd_GetOutput(command1);
+        auto lines = PLATFORMHELPERS::stringSplitToList(result, "\n");
+        for (auto line : lines)
+        {
+            auto split = "change " + std::to_string(changeList) + " by";
+            if (line.find(split) != line.npos)
+            {
+                auto file = PLATFORMHELPERS::stringSplitToList(line, split)[0];
+                //file = file.substr(0, file.size() - 3); // removes " - " from the end
+                std::size_t found = file.rfind(" - ");
+                if (found != std::string::npos)
+                {
+                    file = file.substr(0, found);
+                    std::string command1 = R"(p4 fstat -T clientFile ")" + file + R"(")";
+                    auto result = execCmd_GetOutput(command1);
+                    if (result.find("clientFile ") != result.npos)
+                    {
+                        auto localFile = PLATFORMHELPERS::stringSplitToList(result, "clientFile ")[1];
+                        localFile = PLATFORMHELPERS::stringReplace(localFile, "\n","");
+                        if (extension.empty())
+                        {
+                            files.push_back(localFile);
+                        }
+                        else
+                        {
+                            auto type = PLATFORMHELPERS::stringReplace(extension, ".", "");
+                            if (PLATFORMHELPERS::ends_with(localFile, "."+type))
+                            {
+                                files.push_back(localFile);
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    return files;
 }
