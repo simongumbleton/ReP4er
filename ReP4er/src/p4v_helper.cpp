@@ -68,13 +68,24 @@ std::string P4V::execCmd_GetOutput(std::string in_command) {
 bool P4V::login()
 {
     using namespace P4V;
-    int result = execCmd("p4 login -s");
-    if (result != 0)
+    if (checkLoginStatus())
+    {
+        return true;
+    }
+    else
     {
         //user is not logged in, so provide a cmd prompt for them to login
         PrintToConsole("User is not logged in to P4 - Please enter password to login");
-        result = execCmd("p4 login");
+        int result = execCmd("p4 login");
+        return result == 0;
     }
+}
+    
+
+bool P4V::checkLoginStatus()
+{
+    using namespace P4V;
+    int result = execCmd("p4 login -s");
     return result == 0;
 }
 

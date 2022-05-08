@@ -56,4 +56,6 @@ namespace P4V
 
 	bool login();
 
+	bool checkLoginStatus();
+
 }

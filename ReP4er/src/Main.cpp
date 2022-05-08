@@ -45,10 +45,13 @@ char currentProject[256];
 bool WindowStatus = false;
 juce::DocumentWindow* currentWindow = nullptr;
 
-gaccel_register_t MyReaperAction = { { 0, 0, 0 }, "My Reaper Action" };
+gaccel_register_t Checkout = { { 0, 0, 0 }, "ReP4er - Checkout Current Project" };
+gaccel_register_t Submit = { { 0, 0, 0 }, "ReP4er - Reconcile and Submit Changes" };
 
 
-void LaunchActionWindow();
+void LaunchCheckout();
+void LaunchSubmit();
+void LaunchSettings();
 
 bool HookCommandProc(int command, int flag);
 static void menuHook(const char* name, HMENU handle, const int f);
@@ -76,10 +79,12 @@ extern "C"
 			}
 			int regerrcnt = 0;
 			//Register a custom command ID for an action
-			REGISTER_AND_CHKERROR(MyReaperAction.accel.cmd, "command_id", "My_Reaper_Action");
+			REGISTER_AND_CHKERROR(Checkout.accel.cmd, "command_id", "ReP4er - Checkout Current Project");
+			REGISTER_AND_CHKERROR(Submit.accel.cmd, "command_id", "ReP4er - Reconcile and Submit Changes");
 
 			//register our custom actions
-			plugin_register("gaccel", &MyReaperAction.accel);
+			plugin_register("gaccel", &Checkout.accel);
+			plugin_register("gaccel", &Submit.accel);
 
 			//hook command is where we process command IDs and launch our custom actions
 			rec->Register("hookcommand", (void*)HookCommandProc);
@@ -100,18 +105,18 @@ extern "C"
 		}
 		auto CDW = P4V::GetCWD();
 		//P4V::SetCWD(GetExePath());
-		P4V::SetCWD("D:\\CASoundP4\\CASound");
+	//	P4V::SetCWD("D:\\CASoundP4\\CASound");
 		//PrintToConsole(P4V::execCmd_GetOutput("echo hello world"));
-		PrintToConsole(P4V::GetCWD());
+	//	PrintToConsole(P4V::GetCWD());
 		
-		p4Info* info = P4V::getP4Info();
-		PrintToConsole(info->properties["User name"]);
+	//	p4Info* info = P4V::getP4Info();
+	//	PrintToConsole(info->properties["User name"]);
 
-		if (P4V::login())
-		{
-			PrintToConsole("P4 Login success");
-			P4V::checkoutDirectory("D:\\CASoundP4\\CASound\\Users\\SimonGumbleton");
-		}
+	//	if (P4V::login())
+	//	{
+		//	PrintToConsole("P4 Login success");
+		//	P4V::checkoutDirectory("D:\\CASoundP4\\CASound\\Users\\SimonGumbleton");
+	//	}
 		
 
 		
@@ -302,9 +307,7 @@ void PrintToConsole(int text)
 
 }
 
-
-
-void LaunchActionWindow()
+void LaunchSettings()
 {
 	initialiseJuce_GUI();
 	MessageManagerLock mml(Thread::getCurrentThread());
@@ -318,18 +321,27 @@ void LaunchActionWindow()
 	//std::string name = ReverseNamedCommandLookup(commandID);
 	//int commandID = AddRemoveReaScript(true, 0, reaper.GetResourcePath().."/Scripts/12000.eel", true);
 
-		if (WindowStatus)
-		{
-			currentWindow->toFront(true);
-		}
-		else
-		{
+	if (WindowStatus)
+	{
+		currentWindow->toFront(true);
+	}
+	else
+	{
 		//	TransferWindow* mainWindow2 = new TransferWindow(wName, new TransferTabComponent(juce::TabbedButtonBar::Orientation::TabsAtTop), &transferWindowStatus);
 		//	currentTransferWindow = mainWindow2;
-		}
-		return;
+	}
+	return;
 }
 
+void LaunchCheckout()
+{
+
+}
+
+void LaunchSubmit()
+{
+
+}
 
 
 void bringWindowsToFront()
@@ -351,10 +363,14 @@ bool HookCommandProc(int command, int flag)
 {
 	GetReaperGlobals();
 
-	if (command == MyReaperAction.accel.cmd)
+	if (command == Checkout.accel.cmd)
 	{
-		LaunchActionWindow();
+		LaunchCheckout();
 		return true;
+	}
+	else if (command == Submit.accel.cmd)
+	{
+		LaunchSubmit();
 	}
 	return false;
 }
@@ -377,9 +393,15 @@ static void AddCustomMenuItems(HMENU parentMenuHandle)
 	mi.fType = MFT_STRING;
 
 	// add each command to the popupmenu
-	mi.wID = MyReaperAction.accel.cmd;
-	mi.dwTypeData = (char*)"Launch ReP4er";
+	mi.wID = Submit.accel.cmd;
+	mi.dwTypeData = (char*)"ReP4er - Reconcile And Submit Changes";
 	InsertMenuItem(hMenu, 0, true, &mi);
+
+	mi.wID = Checkout.accel.cmd;
+	mi.dwTypeData = (char*)"ReP4er - Checkout Current Project";
+	InsertMenuItem(hMenu, 0, true, &mi);
+
+	
 
 	if (!parentMenuHandle)
 	{
