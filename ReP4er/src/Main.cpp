@@ -52,7 +52,7 @@ void LaunchActionWindow();
 
 bool HookCommandProc(int command, int flag);
 static void menuHook(const char* name, HMENU handle, const int f);
-static void AddCustomCSGMenuItems(HMENU parentMenuHandle = NULL);
+static void AddCustomMenuItems(HMENU parentMenuHandle = NULL);
 
 extern "C"
 {
@@ -94,17 +94,27 @@ extern "C"
 			//so on mac we add them to the main extenstions menu only
 			//(we add them to the main extensions menu anyway, but on windows its
 			//nice to have them in the main menu too
-			AddCustomCSGMenuItems();
+			AddCustomMenuItems();
 #endif
 
 		}
-		P4V::SetCWD(GetExePath());
+		auto CDW = P4V::GetCWD();
+		//P4V::SetCWD(GetExePath());
 		P4V::SetCWD("D:\\CASoundP4\\CASound");
 		//PrintToConsole(P4V::execCmd_GetOutput("echo hello world"));
 		PrintToConsole(P4V::GetCWD());
 		
 		p4Info* info = P4V::getP4Info();
 		PrintToConsole(info->properties["User name"]);
+
+		if (P4V::login())
+		{
+			PrintToConsole("P4 Login success");
+			P4V::checkoutDirectory("D:\\CASoundP4\\CASound\\Users\\SimonGumbleton");
+		}
+		
+
+		
 
 		return 1;
 	}
@@ -354,11 +364,11 @@ static void menuHook(const char* name, HMENU handle, const int f)
 	if (strcmp(name, "Main extensions") == 0 and f == 0)
 	{
 		// Create a custom menu and add the available commands
-		AddCustomCSGMenuItems(handle);
+		AddCustomMenuItems(handle);
 	}
 }
 
-static void AddCustomCSGMenuItems(HMENU parentMenuHandle)
+static void AddCustomMenuItems(HMENU parentMenuHandle)
 {
 	HMENU hMenu = CreatePopupMenu();
 
@@ -368,7 +378,7 @@ static void AddCustomCSGMenuItems(HMENU parentMenuHandle)
 
 	// add each command to the popupmenu
 	mi.wID = MyReaperAction.accel.cmd;
-	mi.dwTypeData = (char*)"Transfer To Wwise";
+	mi.dwTypeData = (char*)"Launch ReP4er";
 	InsertMenuItem(hMenu, 0, true, &mi);
 
 	if (!parentMenuHandle)
@@ -378,6 +388,6 @@ static void AddCustomCSGMenuItems(HMENU parentMenuHandle)
 
 	mi.fMask = MIIM_SUBMENU | MIIM_TYPE;
 	mi.hSubMenu = hMenu;
-	mi.dwTypeData = (char*)"CSG";
+	mi.dwTypeData = (char*)"ReP4er";
 	InsertMenuItem(parentMenuHandle, GetMenuItemCount(parentMenuHandle) - 1, TRUE, &mi);
 }

@@ -1,5 +1,6 @@
 #include "p4v_helper.h"
 #include "platformhelpers.h"
+#include "reaperHelpers.h"
 
 #include <iostream>
 #include <filesystem>
@@ -62,6 +63,19 @@ std::string P4V::execCmd_GetOutput(std::string in_command) {
     }
     _pclose(pipe);
     return result;
+}
+
+bool P4V::login()
+{
+    using namespace P4V;
+    int result = execCmd("p4 login -s");
+    if (result != 0)
+    {
+        //user is not logged in, so provide a cmd prompt for them to login
+        PrintToConsole("User is not logged in to P4 - Please enter password to login");
+        result = execCmd("p4 login");
+    }
+    return result == 0;
 }
 
 

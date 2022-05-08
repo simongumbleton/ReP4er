@@ -54,9 +54,6 @@ namespace P4V
 
 	std::vector<std::string> getFilesInChangelist(int changeList, std::string extension = "");
 
-
-	
-
-
+	bool login();
 
 }
