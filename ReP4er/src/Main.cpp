@@ -9,6 +9,7 @@
 #include <string>
 #include "stdio.h"
 #include "stdlib.h"
+#include <filesystem>
 
 #include <iostream> 
 #include <sstream>
@@ -335,12 +336,28 @@ void LaunchSettings()
 
 void LaunchCheckout()
 {
+	auto projPath = std::filesystem::path(GetCurrentReaperProjectPath());
+	PrintToConsole((projPath.string()));
+	auto dir = projPath.parent_path();
+	PrintToConsole(dir.string());
+	if (P4V::login())
+	{
+		P4V::checkoutDirectory(dir.string());
+	}
 
 }
 
 void LaunchSubmit()
 {
-
+	auto projPath = std::filesystem::path(GetCurrentReaperProjectPath());
+	PrintToConsole((projPath.string()));
+	auto dir = projPath.parent_path();
+	PrintToConsole(dir.string());
+	if (P4V::login())
+	{
+		P4V::reconcileDirectory(dir.string());
+		P4V::submitChanges();
+	}
 }
 
 

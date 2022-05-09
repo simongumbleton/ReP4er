@@ -23,7 +23,7 @@ namespace P4V
     //global variable for the current changelist number(so all p4 operations in a pipeline can use the same changelist
     int currentChangelist = 0;
     //global changelist description, used for findingand creating the current used changelist for the pipeline
-    std::string defaultdesc = "Automated changelist";
+    std::string defaultdesc = "ReP4er changelist";
 }
 
 
