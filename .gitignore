@@ -74,3 +74,17 @@ JUCE/Builds/VisualStudio2022/x64/Release/Static Library/JuceLib_.538C7304.tlog/C
 .vs/ReP4er/v17/Browse.VC.opendb
 .vs/ReP4er/v17/Solution.VC.db-shm
 .vs/ReP4er/v17/Solution.VC.db-wal
+*.db
+.vs/ReP4er/v16/.suo
+.vs/ReP4er/v16/Browse.VC.db
+.vs/ReP4er/v16/Solution.VC.db
+*.obj
+*.pdb
+*.tlog
+*.log
+JUCE/Builds/VisualStudio2022/x64/Debug/Static Library/include_juce_core.obj
+JUCE/Builds/VisualStudio2022/x64/Debug/Static Library/include_juce_data_structures.obj
+JUCE/Builds/VisualStudio2022/x64/Debug/Static Library/include_juce_events.obj
+JUCE/Builds/VisualStudio2022/x64/Debug/Static Library/include_juce_graphics.obj
+JUCE/Builds/VisualStudio2022/x64/Debug/Static Library/include_juce_gui_basics.obj
+JUCE/Builds/VisualStudio2022/x64/Debug/Static Library/include_juce_gui_extra.obj

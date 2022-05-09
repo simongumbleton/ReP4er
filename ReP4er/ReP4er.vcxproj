@@ -165,7 +165,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;JUCE_MODAL_LOOPS_PERMITTED=1;_DEBUG;VALIDATE_WAMP;USE_WEBSOCKET;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug";SimonsReaperPlugin_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <AdditionalIncludeDirectories>C:\JUCE_6-1-6\modules;$(SolutionDir)juce\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JUCE\JUCE\modules;$(SolutionDir)juce\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
@@ -238,7 +238,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\JUCE_6-1-6\modules;$(SolutionDir)juce\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JUCE\JUCE\modules;$(SolutionDir)juce\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>

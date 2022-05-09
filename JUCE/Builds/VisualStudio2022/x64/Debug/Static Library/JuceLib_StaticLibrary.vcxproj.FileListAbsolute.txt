@@ -1,2 +1,3 @@
 D:\Dev\PersonalProjects\JuceLib\JuceLib\Builds\VisualStudio2022\x64\Debug\Static Library\JuceLib.lib
 D:\Dev\PersonalProjects\ReP4er\JUCE\Builds\VisualStudio2022\x64\Debug\Static Library\JuceLib.lib
+E:\PetProjects\ReP4er\JUCE\Builds\VisualStudio2022\x64\Debug\Static Library\JuceLib.lib
