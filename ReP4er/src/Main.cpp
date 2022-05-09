@@ -46,7 +46,7 @@ char currentProject[256];
 bool WindowStatus = false;
 juce::DocumentWindow* currentWindow = nullptr;
 
-gaccel_register_t Checkout = { { 0, 0, 0 }, "ReP4er - Checkout Current Project" };
+gaccel_register_t Checkout = { { 0, 0, 0 }, "ReP4er - Checkout Current Projects" };
 gaccel_register_t Submit = { { 0, 0, 0 }, "ReP4er - Reconcile and Submit Changes" };
 
 
@@ -80,7 +80,7 @@ extern "C"
 			}
 			int regerrcnt = 0;
 			//Register a custom command ID for an action
-			REGISTER_AND_CHKERROR(Checkout.accel.cmd, "command_id", "ReP4er - Checkout Current Project");
+			REGISTER_AND_CHKERROR(Checkout.accel.cmd, "command_id", "ReP4er - Checkout Current Projects");
 			REGISTER_AND_CHKERROR(Submit.accel.cmd, "command_id", "ReP4er - Reconcile and Submit Changes");
 
 			//register our custom actions
@@ -155,6 +155,30 @@ std::string GetCurrentReaperProjectPath()
 	EnumProjects(-1, projPath, MAX_PATH);
 	return std::string(projPath);
 }
+
+std::string GetCurrentReaperProjectDirectory()
+{
+	auto projPath = std::filesystem::path(GetCurrentReaperProjectPath());
+	//PrintToConsole((projPath.string()));
+	auto dir = projPath.parent_path();
+	return dir.string();
+}
+
+
+
+std::unordered_map<ReaProject*, std::string> GetAllOpenProjects()
+{
+	std::unordered_map<ReaProject*, std::string> projects;
+	ReaProject* proj;
+	char projPath[256];
+	int i = 0;
+	while ((proj = EnumProjects(i++, projPath, 256)))
+	{
+		projects.emplace(proj, projPath);
+	}
+	return projects;
+}
+
 
 void SaveProject(ReaProject* inProj)
 {
@@ -336,28 +360,52 @@ void LaunchSettings()
 
 void LaunchCheckout()
 {
-	auto projPath = std::filesystem::path(GetCurrentReaperProjectPath());
-	PrintToConsole((projPath.string()));
-	auto dir = projPath.parent_path();
-	PrintToConsole(dir.string());
+	auto cwd = P4V::GetCWD();//save the working directoy before we change it
+	P4V::SetCWD(GetCurrentReaperProjectDirectory()); // set it to the current reaper project so P4 login happens at the right place
 	if (P4V::login())
 	{
-		P4V::checkoutDirectory(dir.string());
+		for (auto ReProj : GetAllOpenProjects())
+		{
+			auto projPath = std::filesystem::path(ReProj.second);
+			//PrintToConsole((projPath.string()));
+			auto dir = projPath.parent_path();
+			P4V::SetCWD(dir.string());
+			//PrintToConsole(dir.string());
+			P4V::checkoutDirectory(dir.string());
+		}
+		
 	}
-
+	P4V::SetCWD(cwd);//restore cwd once we're done
 }
 
 void LaunchSubmit()
 {
-	auto projPath = std::filesystem::path(GetCurrentReaperProjectPath());
-	PrintToConsole((projPath.string()));
-	auto dir = projPath.parent_path();
-	PrintToConsole(dir.string());
+	auto cwd = P4V::GetCWD();//save the working directoy before we change it
+	P4V::SetCWD(GetCurrentReaperProjectDirectory()); // set it to the current reaper project so P4 login happens at the right place
 	if (P4V::login())
 	{
-		P4V::reconcileDirectory(dir.string());
-		P4V::submitChanges();
+		for (auto ReProj : GetAllOpenProjects())
+		{
+			SaveProject(ReProj.first);
+			auto projPath = std::filesystem::path(ReProj.second);
+			//PrintToConsole((projPath.string()));
+			auto dir = projPath.parent_path();
+			P4V::SetCWD(dir.string());
+			//PrintToConsole(dir.string());
+			P4V::reconcileDirectory(dir.string());
+			P4V::revertUnchangedFilesInDir(dir.string());
+		}
+		if (P4V::doesChangelistHaveFiles())
+		{
+			P4V::submitChanges();
+		}
+		else
+		{
+			P4V::deleteChangelist();
+		}
+		
 	}
+	P4V::SetCWD(cwd);//restore cwd once we're done
 }
 
 
@@ -415,7 +463,7 @@ static void AddCustomMenuItems(HMENU parentMenuHandle)
 	InsertMenuItem(hMenu, 0, true, &mi);
 
 	mi.wID = Checkout.accel.cmd;
-	mi.dwTypeData = (char*)"ReP4er - Checkout Current Project";
+	mi.dwTypeData = (char*)"ReP4er - Checkout Current Projects";
 	InsertMenuItem(hMenu, 0, true, &mi);
 
 	

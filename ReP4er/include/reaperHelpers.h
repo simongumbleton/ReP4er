@@ -18,6 +18,10 @@ ReaProject* GetCurrentReaProject();
 
 std::string GetCurrentReaperProjectPath();
 
+std::string GetCurrentReaperProjectDirectory();
+
+std::unordered_map<ReaProject*,std::string> GetAllOpenProjects();
+
 void SaveProject();
 
 void Reaper_RenderAllQuedJobs();

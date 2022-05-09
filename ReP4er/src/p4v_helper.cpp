@@ -301,6 +301,7 @@ void P4V::submitChanges(int changeList, bool deleteIfEmpty)
     {
         std::string command1 = "p4 submit -c " + std::to_string(changeList);
         execCmd(command1);
+        currentChangelist = 0;
     }
     else if (deleteIfEmpty)
     {
@@ -348,6 +349,7 @@ void P4V::deleteChangelist(int changeList)
     {
         std::string command1 = "p4 change -d " + std::to_string(changeList);
         execCmd(command1);
+        currentChangelist = 0;
     }
 }
 

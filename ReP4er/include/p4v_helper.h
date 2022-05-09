@@ -44,15 +44,15 @@ namespace P4V
 
 	void submitChanges(int changeList=0, bool deleteIfEmpty=true);
 
-	bool doesChangelistHaveFiles(int changeList);
+	bool doesChangelistHaveFiles(int changeList = 0);
 
-	void deleteChangelist(int changeList);
+	void deleteChangelist(int changeList = 0);
 
 	void revertUnchangedFilesInDir(std::string path);
 
 	void revertUnchangedFiles(std::vector<std::string> fileList);
 
-	std::vector<std::string> getFilesInChangelist(int changeList, std::string extension = "");
+	std::vector<std::string> getFilesInChangelist(int changeList = 0, std::string extension = "");
 
 	bool login();
 
