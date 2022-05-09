@@ -88,3 +88,11 @@ JUCE/Builds/VisualStudio2022/x64/Debug/Static Library/include_juce_events.obj
 JUCE/Builds/VisualStudio2022/x64/Debug/Static Library/include_juce_graphics.obj
 JUCE/Builds/VisualStudio2022/x64/Debug/Static Library/include_juce_gui_basics.obj
 JUCE/Builds/VisualStudio2022/x64/Debug/Static Library/include_juce_gui_extra.obj
+x64/Release/Static Library/JuceLib.pdb
+x64/Release/Static Library/JuceLib.lib
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/JuceLib_StaticLibrary.log
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/JuceLib_.538C7304.tlog/CL.write.1.tlog
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/JuceLib_.538C7304.tlog/CL.read.1.tlog
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/JuceLib_.538C7304.tlog/CL.command.1.tlog
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/JuceLib.pdb
+JUCE/Builds/VisualStudio2022/x64/Release/Static Library/include_juce_gui_basics.obj
