@@ -196,12 +196,12 @@ int P4V::findChangelistByDescription(std::string description)
     return 0;
 }
 
-void P4V::checkoutDirectory(std::string dirPath, std::string extenstion)
+void P4V::checkoutDirectory(std::string dirPath, std::string extenstion, int changelist)
 {
     using namespace P4V;
-    if (currentChangelist == 0)
+    if (changelist <= 0)
     {
-        createChangelist(defaultdesc);
+        changelist = createChangelist(defaultdesc);
     }
     if (extenstion.empty())
     {
@@ -213,41 +213,41 @@ void P4V::checkoutDirectory(std::string dirPath, std::string extenstion)
         dirPath += R"(.../*.)" + type;
     }
     std::string command1 = R"(p4 edit -c )"
-        + std::to_string(currentChangelist)
+        + std::to_string(changelist)
         + R"( ")" + dirPath + R"(")";
     execCmd(command1);
 }
 
-void P4V::checkoutFiles(std::vector<std::string> fileList)
+void P4V::checkoutFiles(std::vector<std::string> fileList, int changelist)
 {
     using namespace P4V;
-    if (currentChangelist == 0)
+    if (changelist <= 0)
     {
-        createChangelist(defaultdesc);
+        changelist = createChangelist(defaultdesc);
     }
     for (auto file : fileList)
     {
         std::string command1 = R"(p4 edit -c )"
-            + std::to_string(currentChangelist)
+            + std::to_string(changelist)
             + R"( ")" + file + R"(")";
         execCmd(command1);
         std::string command2 = R"(p4 reconcile -c )"
-            + std::to_string(currentChangelist)
+            + std::to_string(changelist)
             + R"( ")" + file + R"(")";
         execCmd(command2);
         std::string command3 = R"(p4 reopen -c )"
-            + std::to_string(currentChangelist)
+            + std::to_string(changelist)
             + R"( ")" + file + R"(")";
         execCmd(command3);
     }
 }
 
-void P4V::reconcileDirectory(std::string dirPath, std::string extenstion)
+void P4V::reconcileDirectory(std::string dirPath, std::string extenstion, int changelist)
 {
     using namespace P4V;
-    if (currentChangelist == 0)
+    if (changelist <= 0)
     {
-        createChangelist(defaultdesc);
+        changelist = createChangelist(defaultdesc);
     }
     if (extenstion.empty())
     {
@@ -259,17 +259,17 @@ void P4V::reconcileDirectory(std::string dirPath, std::string extenstion)
         dirPath += R"(.../*.)" + type;
     }
     std::string command1 = R"(p4 reconcile -c )"
-        + std::to_string(currentChangelist)
+        + std::to_string(changelist)
         + R"( ")" + dirPath + R"(")";
     execCmd(command1);
 }
 
-void P4V::reopenDirectory(std::string dirPath, std::string extenstion)
+void P4V::reopenDirectory(std::string dirPath, std::string extenstion, int changelist)
 {
     using namespace P4V;
-    if (currentChangelist == 0)
+    if (changelist <= 0)
     {
-        createChangelist(defaultdesc);
+        changelist = createChangelist(defaultdesc);
     }
     if (extenstion.empty())
     {
@@ -281,7 +281,7 @@ void P4V::reopenDirectory(std::string dirPath, std::string extenstion)
         dirPath += R"(.../*.)" + type;
     }
     std::string command1 = R"(p4 reopen -c )"
-        + std::to_string(currentChangelist)
+        + std::to_string(changelist)
         + R"( ")" + dirPath + R"(")";
     execCmd(command1);
 }

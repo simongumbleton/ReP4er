@@ -26,6 +26,7 @@
 #include "reaperHelpers.h"
 #include "platformhelpers.h"
 #include "p4v_helper.h"
+#include "ProjectLoaderHelper.h"
 
 
 REAPER_PLUGIN_HINSTANCE g_hInst;
@@ -46,13 +47,9 @@ char currentProject[256];
 bool WindowStatus = false;
 juce::DocumentWindow* currentWindow = nullptr;
 
-gaccel_register_t Checkout = { { 0, 0, 0 }, "ReP4er - Checkout Current Projects" };
-gaccel_register_t Submit = { { 0, 0, 0 }, "ReP4er - Reconcile and Submit Changes" };
+gaccel_register_t Checkout = { { 0, 0, 0 }, "ReP4er - Checkout all Open Projects" };
+gaccel_register_t Submit = { { 0, 0, 0 }, "ReP4er - Save, Reconcile, Submit and Close all Open Projects" };
 
-
-void LaunchCheckout();
-void LaunchSubmit();
-void LaunchSettings();
 
 bool HookCommandProc(int command, int flag);
 static void menuHook(const char* name, HMENU handle, const int f);
@@ -80,8 +77,8 @@ extern "C"
 			}
 			int regerrcnt = 0;
 			//Register a custom command ID for an action
-			REGISTER_AND_CHKERROR(Checkout.accel.cmd, "command_id", "ReP4er - Checkout Current Projects");
-			REGISTER_AND_CHKERROR(Submit.accel.cmd, "command_id", "ReP4er - Reconcile and Submit Changes");
+			REGISTER_AND_CHKERROR(Checkout.accel.cmd, "command_id", "ReP4er - Checkout all Open Projects");
+			REGISTER_AND_CHKERROR(Submit.accel.cmd, "command_id", "ReP4er - Save, Reconcile, Submit and Close all Open Projects");
 
 			//register our custom actions
 			plugin_register("gaccel", &Checkout.accel);
@@ -120,7 +117,7 @@ extern "C"
 	//	}
 		
 
-		
+		ProjectLoaderHelper_Start();
 
 		return 1;
 	}
@@ -361,51 +358,88 @@ void LaunchSettings()
 void LaunchCheckout()
 {
 	auto cwd = P4V::GetCWD();//save the working directoy before we change it
-	P4V::SetCWD(GetCurrentReaperProjectDirectory()); // set it to the current reaper project so P4 login happens at the right place
-	if (P4V::login())
 	{
 		for (auto ReProj : GetAllOpenProjects())
 		{
 			auto projPath = std::filesystem::path(ReProj.second);
+			if (projPath.empty())
+			{
+				continue;
+			}
 			//PrintToConsole((projPath.string()));
 			auto dir = projPath.parent_path();
-			P4V::SetCWD(dir.string());
 			//PrintToConsole(dir.string());
-			P4V::checkoutDirectory(dir.string());
+			P4V::SetCWD(dir.string());
+			if (P4V::login)
+			{
+				auto projName = PLATFORMHELPERS::filenameFromPathString(dir.string(), true);
+				int cl = P4V::createChangelist("ReP4er: " + projName);
+				P4V::checkoutDirectory(dir.string(),"", cl);
+			}
 		}
-		
 	}
 	P4V::SetCWD(cwd);//restore cwd once we're done
 }
 
-void LaunchSubmit()
+void CheckoutCurrentProject()
 {
 	auto cwd = P4V::GetCWD();//save the working directoy before we change it
-	P4V::SetCWD(GetCurrentReaperProjectDirectory()); // set it to the current reaper project so P4 login happens at the right place
-	if (P4V::login())
 	{
-		for (auto ReProj : GetAllOpenProjects())
+		auto projPath = GetCurrentReaperProjectDirectory();
+		if (projPath.empty())
 		{
-			SaveProject(ReProj.first);
-			auto projPath = std::filesystem::path(ReProj.second);
-			//PrintToConsole((projPath.string()));
-			auto dir = projPath.parent_path();
-			P4V::SetCWD(dir.string());
-			//PrintToConsole(dir.string());
-			P4V::reconcileDirectory(dir.string());
-			P4V::revertUnchangedFilesInDir(dir.string());
+			return;
 		}
-		if (P4V::doesChangelistHaveFiles())
+		//PrintToConsole(dir.string());
+		P4V::SetCWD(projPath);
+		if (P4V::login)
 		{
-			P4V::submitChanges();
+			auto projName = PLATFORMHELPERS::filenameFromPathString(projPath, true);
+			int cl = P4V::createChangelist("ReP4er: " + projName);
+			P4V::checkoutDirectory(projPath,"",cl);
 		}
-		else
-		{
-			P4V::deleteChangelist();
-		}
-		
 	}
 	P4V::SetCWD(cwd);//restore cwd once we're done
+}
+
+
+void LaunchSubmit()
+{
+	allowPerProjectCheckoutOnChange = false;
+	auto cwd = P4V::GetCWD();//save the working directoy before we change it
+	for (auto ReProj : GetAllOpenProjects())
+	{
+		auto projPath = std::filesystem::path(ReProj.second);
+		if (projPath.empty())
+		{
+			continue;
+		}
+		SaveProject(ReProj.first);
+		auto dir = projPath.parent_path();
+
+		P4V::SetCWD(dir.string());
+		//PrintToConsole(dir.string());
+			
+		if (P4V::login)
+		{
+			auto projName = PLATFORMHELPERS::filenameFromPathString(dir.string(), true);
+			int cl = P4V::createChangelist("ReP4er: " + projName);
+			P4V::reconcileDirectory(dir.string(),"", cl);
+			P4V::revertUnchangedFilesInDir(dir.string());
+			if (P4V::doesChangelistHaveFiles(cl))
+			{
+				P4V::submitChanges(cl);
+			}
+			else
+			{
+				P4V::deleteChangelist(cl);
+			}
+		}	
+	}
+	P4V::SetCWD(cwd);//restore cwd once we're done
+	Main_OnCommand(40886,0);//File: Close all projects
+	ClearProjectCheckoutMap();
+	allowPerProjectCheckoutOnChange = true;
 }
 
 
@@ -459,11 +493,11 @@ static void AddCustomMenuItems(HMENU parentMenuHandle)
 
 	// add each command to the popupmenu
 	mi.wID = Submit.accel.cmd;
-	mi.dwTypeData = (char*)"ReP4er - Reconcile And Submit Changes";
+	mi.dwTypeData = (char*)"ReP4er - Save, Reconcile, Submit and Close all Open Projects";
 	InsertMenuItem(hMenu, 0, true, &mi);
 
 	mi.wID = Checkout.accel.cmd;
-	mi.dwTypeData = (char*)"ReP4er - Checkout Current Projects";
+	mi.dwTypeData = (char*)"ReP4er - Checkout all Open Projects";
 	InsertMenuItem(hMenu, 0, true, &mi);
 
 	

@@ -24,6 +24,7 @@
     <ClInclude Include="include\JUCE\JuceHeader.h" />
     <ClInclude Include="include\p4v_helper.h" />
     <ClInclude Include="include\platformhelpers.h" />
+    <ClInclude Include="include\ProjectLoaderHelper.h" />
     <ClInclude Include="include\reaperHelpers.h" />
     <ClInclude Include="include\reaper_plugin.h" />
     <ClInclude Include="include\reaper_plugin_functions.h" />
@@ -32,6 +33,7 @@
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\p4v_helper.cpp" />
     <ClCompile Include="src\platformhelpers.cpp" />
+    <ClCompile Include="src\ProjectLoaderHelper.cpp" />
     <ClCompile Include="src\reaperHelpers.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -268,7 +270,7 @@
     <Link>
       <AdditionalDependencies>JuceLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)x64\Release\Static Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>$(SolutionDir)/Build/x64/Release/reaper_simonsreaperplugin_x64.lib</ImportLibrary>
       <ProgramDataBaseFile>$(SolutionDir)/Build/x64/Release/reaper_rep4er_x64.pdb</ProgramDataBaseFile>

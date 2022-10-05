@@ -10,6 +10,15 @@ struct p4Info
 
 static p4Info P4INFO;
 
+class ReaProject;
+
+//Defined in Main
+void LaunchCheckout();
+void CheckoutCurrentProject();
+void LaunchSubmit();
+void LaunchSettings();
+
+
 namespace P4V
 {
 	
@@ -34,13 +43,13 @@ namespace P4V
 
 	int findChangelistByDescription(std::string description);
 
-	void checkoutDirectory(std::string dirPath, std::string extenstion = "");
+	void checkoutDirectory(std::string dirPath, std::string extenstion = "",int changelist = -1);
 
-	void checkoutFiles(std::vector<std::string> fileList);
+	void checkoutFiles(std::vector<std::string> fileList, int changelist = -1);
 
-	void reconcileDirectory(std::string dirPath, std::string extenstion = "");
+	void reconcileDirectory(std::string dirPath, std::string extenstion = "", int changelist = -1);
 
-	void reopenDirectory(std::string dirPath, std::string extenstion = "");
+	void reopenDirectory(std::string dirPath, std::string extenstion = "", int changelist = -1);
 
 	void submitChanges(int changeList=0, bool deleteIfEmpty=true);
 

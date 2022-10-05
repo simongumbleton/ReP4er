@@ -36,6 +36,9 @@
     <ClInclude Include="include\p4v_helper.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\ProjectLoaderHelper.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -48,6 +51,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\p4v_helper.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ProjectLoaderHelper.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
