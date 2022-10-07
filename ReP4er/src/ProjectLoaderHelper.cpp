@@ -55,6 +55,10 @@ void activeProjectCheck()
     if (allowPerProjectCheckoutOnChange)
     {
         std::string newCurrentProj = GetCurrentReaperProject();
+        if (newCurrentProj.empty())
+        {
+            return;
+        }
         ReaProject* newCurrentReaProj = GetCurrentReaProject();
         if (newCurrentProj != currentProjName) {
             currentProjName = newCurrentProj;

@@ -89,6 +89,41 @@ bool P4V::checkLoginStatus()
     return result == 0;
 }
 
+bool P4V::checkForP4Config()
+{
+    using namespace P4V;
+    auto output = execCmd_GetOutput("p4 set");
+    auto lines = PLATFORMHELPERS::stringSplitToList(output, "\n");
+    for (auto line : lines)
+    {
+        if (line.find("P4CONFIG") != line.npos)
+        {
+            if (line.find("noconfig") != line.npos)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+    }
+}
+
+bool P4V::setP4ConfigName(std::string configName)
+{
+    try
+    {
+        auto output = execCmd_GetOutput("p4 set P4CONFIG=" + configName);
+    }
+    catch (...)
+    {
+        PrintToConsole("Error setting p4 config file name..." + configName);
+        return false;
+    }
+    return true;
+}
+
 
 void P4V::setGlobalChangelistDescription(std::string in_description)
 {
@@ -177,8 +212,7 @@ int P4V::findChangelistByDescription(std::string description)
             return 0;
         }
     }
-    std::string command1 = R"(p4 changes -s pending -u )"
-        + P4INFO.properties["User name"];
+    std::string command1 = R"(p4 changes -s pending -l -u )"+ P4INFO.properties["User name"];
     if (P4INFO.properties.find("Client name") != P4INFO.properties.end())
     {
         command1 += " -c " + P4INFO.properties["Client name"];

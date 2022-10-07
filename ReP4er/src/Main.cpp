@@ -102,21 +102,7 @@ extern "C"
 
 		}
 		auto CDW = P4V::GetCWD();
-		//P4V::SetCWD(GetExePath());
-	//	P4V::SetCWD("D:\\CASoundP4\\CASound");
-		//PrintToConsole(P4V::execCmd_GetOutput("echo hello world"));
-	//	PrintToConsole(P4V::GetCWD());
-		
-	//	p4Info* info = P4V::getP4Info();
-	//	PrintToConsole(info->properties["User name"]);
-
-	//	if (P4V::login())
-	//	{
-		//	PrintToConsole("P4 Login success");
-		//	P4V::checkoutDirectory("D:\\CASoundP4\\CASound\\Users\\SimonGumbleton");
-	//	}
-		
-
+		P4V::setP4ConfigName();
 		ProjectLoaderHelper_Start();
 
 		return 1;
@@ -366,13 +352,17 @@ void LaunchCheckout()
 			{
 				continue;
 			}
+			auto projName = PLATFORMHELPERS::filenameFromPathString(projPath.string());
+			if (projName.empty())
+			{
+				continue;
+			}
 			//PrintToConsole((projPath.string()));
 			auto dir = projPath.parent_path();
 			//PrintToConsole(dir.string());
 			P4V::SetCWD(dir.string());
-			if (P4V::login)
+			if (P4V::checkForP4Config() && (P4V::login()))
 			{
-				auto projName = PLATFORMHELPERS::filenameFromPathString(dir.string(), true);
 				int cl = P4V::createChangelist("ReP4er: " + projName);
 				P4V::checkoutDirectory(dir.string(),"", cl);
 			}
@@ -385,18 +375,22 @@ void CheckoutCurrentProject()
 {
 	auto cwd = P4V::GetCWD();//save the working directoy before we change it
 	{
-		auto projPath = GetCurrentReaperProjectDirectory();
+		auto projPath = std::filesystem::path(GetCurrentReaperProjectPath());
 		if (projPath.empty())
 		{
 			return;
 		}
-		//PrintToConsole(dir.string());
-		P4V::SetCWD(projPath);
-		if (P4V::login)
+		auto projName = GetCurrentReaperProjectName();
+		if (projName.empty())
 		{
-			auto projName = PLATFORMHELPERS::filenameFromPathString(projPath, true);
+			return;
+		}
+		auto dir = projPath.parent_path();
+		P4V::SetCWD(dir.string());
+		if (P4V::checkForP4Config() && (P4V::login()))
+		{
 			int cl = P4V::createChangelist("ReP4er: " + projName);
-			P4V::checkoutDirectory(projPath,"",cl);
+			P4V::checkoutDirectory(dir.string(),"",cl);
 		}
 	}
 	P4V::SetCWD(cwd);//restore cwd once we're done
@@ -405,7 +399,10 @@ void CheckoutCurrentProject()
 
 void LaunchSubmit()
 {
+	LaunchCheckout();//make sure all open projects are checked out
+
 	allowPerProjectCheckoutOnChange = false;
+	std::unordered_map<int, std::string> CLs;//CLs and directories
 	auto cwd = P4V::GetCWD();//save the working directoy before we change it
 	for (auto ReProj : GetAllOpenProjects())
 	{
@@ -414,30 +411,41 @@ void LaunchSubmit()
 		{
 			continue;
 		}
-		SaveProject(ReProj.first);
+		if (IsProjectDirty(ReProj.first))
+		{
+			SaveProject(ReProj.first);
+		}
 		auto dir = projPath.parent_path();
 
+		auto projName = PLATFORMHELPERS::filenameFromPathString(projPath.string());
 		P4V::SetCWD(dir.string());
+		if (P4V::checkForP4Config() && (P4V::login()))
+		{
+			int cl = P4V::createChangelist("ReP4er: " + projName);
+			CLs[cl] = dir.string();
+		}	
+	}
+	Main_OnCommand(40886, 0);//File: Close all projects
+	for (auto CL : CLs)
+	{
+		P4V::SetCWD(CL.second);
 		//PrintToConsole(dir.string());
 			
-		if (P4V::login)
+		if (P4V::checkForP4Config() && (P4V::login()))
 		{
-			auto projName = PLATFORMHELPERS::filenameFromPathString(dir.string(), true);
-			int cl = P4V::createChangelist("ReP4er: " + projName);
-			P4V::reconcileDirectory(dir.string(),"", cl);
-			P4V::revertUnchangedFilesInDir(dir.string());
-			if (P4V::doesChangelistHaveFiles(cl))
+			P4V::reconcileDirectory(CL.second,"", CL.first);
+			P4V::revertUnchangedFilesInDir(CL.second);
+			if (P4V::doesChangelistHaveFiles(CL.first))
 			{
-				P4V::submitChanges(cl);
+				P4V::submitChanges(CL.first);
 			}
 			else
 			{
-				P4V::deleteChangelist(cl);
+				P4V::deleteChangelist(CL.first);
 			}
 		}	
 	}
 	P4V::SetCWD(cwd);//restore cwd once we're done
-	Main_OnCommand(40886,0);//File: Close all projects
 	ClearProjectCheckoutMap();
 	allowPerProjectCheckoutOnChange = true;
 }

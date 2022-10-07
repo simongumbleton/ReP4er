@@ -67,4 +67,7 @@ namespace P4V
 
 	bool checkLoginStatus();
 
+	bool checkForP4Config();
+
+	bool setP4ConfigName(std::string configName = "p4config.txt");
 }
