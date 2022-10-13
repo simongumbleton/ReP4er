@@ -14,7 +14,7 @@
 #include <iomanip>
 #include <ctime>
 
-
+std::unordered_map<int, std::string> trackedChangeLists = {};
 
 
 
@@ -89,7 +89,7 @@ bool P4V::checkLoginStatus()
     return result == 0;
 }
 
-bool P4V::checkForP4Config()
+bool P4V::checkForP4Config(bool printResult)
 {
     using namespace P4V;
     auto output = execCmd_GetOutput("p4 set");
@@ -100,6 +100,11 @@ bool P4V::checkForP4Config()
         {
             if (line.find("noconfig") != line.npos)
             {
+                if (printResult)
+                {
+                    PrintToConsole("Warning! - No P4 config found for current directoy: " + P4V::GetCWD());
+                    PrintToConsole("Perforce operations in this directory will be ignored");
+                }
                 return false;
             }
             else
@@ -108,6 +113,7 @@ bool P4V::checkForP4Config()
             }
         }
     }
+    return false;
 }
 
 bool P4V::setP4ConfigName(std::string configName)
@@ -183,6 +189,7 @@ int P4V::createChangelist(std::string description)
     currentChangelist = findChangelistByDescription(description);
     if (currentChangelist != 0)
     {
+        trackedChangeLists.insert({ currentChangelist,GetCWD() });
         return currentChangelist;
     }
     std::string desc = description + std::string(" - ") + getDateAndTimeNow();
@@ -195,6 +202,7 @@ int P4V::createChangelist(std::string description)
     if (splitResult.size() == 3) //Change 2831 created.
     {
         currentChangelist = std::stoi(splitResult[1]);
+        //trackedChangeLists.insert({currentChangelist,GetCWD()});
         return currentChangelist;
     }
     currentChangelist = 0;
@@ -335,6 +343,7 @@ void P4V::submitChanges(int changeList, bool deleteIfEmpty)
     {
         std::string command1 = "p4 submit -c " + std::to_string(changeList);
         execCmd(command1);
+        trackedChangeLists.erase(changeList);
         currentChangelist = 0;
     }
     else if (deleteIfEmpty)
@@ -346,7 +355,6 @@ void P4V::submitChanges(int changeList, bool deleteIfEmpty)
 bool P4V::doesChangelistHaveFiles(int changeList)
 {
     using namespace P4V;
-    bool hasFiles = false;
     if (changeList == 0)
     {
         if (currentChangelist == 0)
@@ -357,15 +365,18 @@ bool P4V::doesChangelistHaveFiles(int changeList)
     }
     std::string command1 = "p4 opened -c " + std::to_string(changeList);
     auto result = execCmd_GetOutput(command1);
+    if (result.empty())
+    {
+        return false;
+    }
     if (result.find("File(s) not opened on this client.") != result.npos)
     {
-        hasFiles = false;
+        return false;
     }
     else {
-        hasFiles = true;
+        return true;
     }
-
-    return hasFiles;
+    return false;
 }
 
 void P4V::deleteChangelist(int changeList)
@@ -383,6 +394,7 @@ void P4V::deleteChangelist(int changeList)
     {
         std::string command1 = "p4 change -d " + std::to_string(changeList);
         execCmd(command1);
+        //trackedChangeLists.erase(changeList);
         currentChangelist = 0;
     }
 }

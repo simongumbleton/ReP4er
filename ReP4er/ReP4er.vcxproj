@@ -28,6 +28,7 @@
     <ClInclude Include="include\reaperHelpers.h" />
     <ClInclude Include="include\reaper_plugin.h" />
     <ClInclude Include="include\reaper_plugin_functions.h" />
+    <ClInclude Include="include\reP4er_settings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp" />

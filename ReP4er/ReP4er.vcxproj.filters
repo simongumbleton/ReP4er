@@ -39,6 +39,9 @@
     <ClInclude Include="include\ProjectLoaderHelper.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\reP4er_settings.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">

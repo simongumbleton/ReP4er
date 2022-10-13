@@ -18,10 +18,11 @@ void CheckoutCurrentProject();
 void LaunchSubmit();
 void LaunchSettings();
 
+extern std::unordered_map<int, std::string> trackedChangeLists; //map of CL and working directories
 
 namespace P4V
 {
-	
+	//static std::unordered_map<int, std::string> trackedChangeLists; //map of CL and working directories
 
 	int execCmd(std::string in_command);
 
@@ -67,7 +68,7 @@ namespace P4V
 
 	bool checkLoginStatus();
 
-	bool checkForP4Config();
+	bool checkForP4Config(bool printResult = true);
 
 	bool setP4ConfigName(std::string configName = "p4config.txt");
 }

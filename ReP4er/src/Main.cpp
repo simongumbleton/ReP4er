@@ -43,12 +43,13 @@ int WaapiPort = 8095;
 
 char currentProject[256];
 
-//std::unique_ptr<juce::DocumentWindow>currentActiveWindow;
+std::unique_ptr<juce::DocumentWindow>currentActiveWindow;
 bool WindowStatus = false;
 juce::DocumentWindow* currentWindow = nullptr;
 
 gaccel_register_t Checkout = { { 0, 0, 0 }, "ReP4er - Checkout all Open Projects" };
 gaccel_register_t Submit = { { 0, 0, 0 }, "ReP4er - Save, Reconcile, Submit and Close all Open Projects" };
+gaccel_register_t Settings = { { 0, 0, 0 }, "ReP4er - Settings" };
 
 
 bool HookCommandProc(int command, int flag);
@@ -79,10 +80,12 @@ extern "C"
 			//Register a custom command ID for an action
 			REGISTER_AND_CHKERROR(Checkout.accel.cmd, "command_id", "ReP4er - Checkout all Open Projects");
 			REGISTER_AND_CHKERROR(Submit.accel.cmd, "command_id", "ReP4er - Save, Reconcile, Submit and Close all Open Projects");
+			REGISTER_AND_CHKERROR(Settings.accel.cmd, "command_id", "ReP4er - Settings");
 
 			//register our custom actions
 			plugin_register("gaccel", &Checkout.accel);
 			plugin_register("gaccel", &Submit.accel);
+			plugin_register("gaccel", &Settings.accel);
 
 			//hook command is where we process command IDs and launch our custom actions
 			rec->Register("hookcommand", (void*)HookCommandProc);
@@ -99,12 +102,37 @@ extern "C"
 			//nice to have them in the main menu too
 			AddCustomMenuItems();
 #endif
+			auto CWD = P4V::GetCWD();
+			P4V::setP4ConfigName();
+			ProjectLoaderHelper_Start();
 
+			// If Reaper exe is in source control then check it out so its writable
+			auto reaperExePath = GetReaperResourcePath();
+			P4V::SetCWD(reaperExePath);
+			if (P4V::checkForP4Config(false) && (P4V::login()))
+			{
+				auto cl = P4V::createChangelist("Reaper Tool");
+				P4V::checkoutDirectory(reaperExePath,"",cl);
+			}
+			P4V::SetCWD(CWD);
+			return 1;
 		}
-		auto CDW = P4V::GetCWD();
-		P4V::setP4ConfigName();
-		ProjectLoaderHelper_Start();
+		else // Reaper is being shut down
+		{
+			auto CWD = P4V::GetCWD();
+			// If Reaper exe is in source control then check it out so its writable
+			auto reaperExePath = GetReaperResourcePath();
+			P4V::SetCWD(reaperExePath);
+			if (P4V::checkForP4Config(false) && (P4V::login()))
+			{
+				auto cl = P4V::createChangelist("Reaper Tool");
+				P4V::reconcileDirectory(reaperExePath,"",cl);
+				P4V::submitChanges(cl);
+			}
+			P4V::SetCWD(CWD);
+		}
 
+		
 		return 1;
 	}
 }
@@ -331,12 +359,11 @@ void LaunchSettings()
 
 	if (WindowStatus)
 	{
-		currentWindow->toFront(true);
+		currentActiveWindow->toFront(true);
 	}
 	else
 	{
-		//	TransferWindow* mainWindow2 = new TransferWindow(wName, new TransferTabComponent(juce::TabbedButtonBar::Orientation::TabsAtTop), &transferWindowStatus);
-		//	currentTransferWindow = mainWindow2;
+		currentActiveWindow.reset(new P4GuiWindow(wName, &WindowStatus));
 	}
 	return;
 }
@@ -364,7 +391,9 @@ void LaunchCheckout()
 			if (P4V::checkForP4Config() && (P4V::login()))
 			{
 				int cl = P4V::createChangelist("ReP4er: " + projName);
+				trackedChangeLists.insert({ cl, dir.string() });
 				P4V::checkoutDirectory(dir.string(),"", cl);
+				P4V::reconcileDirectory(dir.string(), ".rpp", cl);
 			}
 		}
 	}
@@ -390,7 +419,9 @@ void CheckoutCurrentProject()
 		if (P4V::checkForP4Config() && (P4V::login()))
 		{
 			int cl = P4V::createChangelist("ReP4er: " + projName);
+			trackedChangeLists.insert({ cl, dir.string() });
 			P4V::checkoutDirectory(dir.string(),"",cl);
+			P4V::reconcileDirectory(dir.string(), ".rpp", cl);
 		}
 	}
 	P4V::SetCWD(cwd);//restore cwd once we're done
@@ -402,7 +433,7 @@ void LaunchSubmit()
 	LaunchCheckout();//make sure all open projects are checked out
 
 	allowPerProjectCheckoutOnChange = false;
-	std::unordered_map<int, std::string> CLs;//CLs and directories
+	//std::unordered_map<int, std::string> CLs;//CLs and directories
 	auto cwd = P4V::GetCWD();//save the working directoy before we change it
 	for (auto ReProj : GetAllOpenProjects())
 	{
@@ -414,19 +445,11 @@ void LaunchSubmit()
 		if (IsProjectDirty(ReProj.first))
 		{
 			SaveProject(ReProj.first);
-		}
-		auto dir = projPath.parent_path();
-
-		auto projName = PLATFORMHELPERS::filenameFromPathString(projPath.string());
-		P4V::SetCWD(dir.string());
-		if (P4V::checkForP4Config() && (P4V::login()))
-		{
-			int cl = P4V::createChangelist("ReP4er: " + projName);
-			CLs[cl] = dir.string();
 		}	
 	}
 	Main_OnCommand(40886, 0);//File: Close all projects
-	for (auto CL : CLs)
+	auto iterTrackedChangelists = trackedChangeLists; //make a copy for itteration because trackedChangeLists can be modified in create, submit and delete changelist calls
+	for (auto CL : iterTrackedChangelists)
 	{
 		P4V::SetCWD(CL.second);
 		//PrintToConsole(dir.string());
@@ -447,6 +470,7 @@ void LaunchSubmit()
 	}
 	P4V::SetCWD(cwd);//restore cwd once we're done
 	ClearProjectCheckoutMap();
+	trackedChangeLists.clear();
 	allowPerProjectCheckoutOnChange = true;
 }
 
@@ -479,6 +503,12 @@ bool HookCommandProc(int command, int flag)
 	{
 		LaunchSubmit();
 	}
+	else if (command == Settings.accel.cmd)
+	{
+		// Disable settings menu item while its WIP
+		PrintToConsole("Settings Not Implemented");
+		//LaunchSettings();
+	}
 	return false;
 }
 
@@ -508,6 +538,10 @@ static void AddCustomMenuItems(HMENU parentMenuHandle)
 	mi.dwTypeData = (char*)"ReP4er - Checkout all Open Projects";
 	InsertMenuItem(hMenu, 0, true, &mi);
 
+// Disable settings menu item while its WIP
+//	mi.wID = Settings.accel.cmd;
+//	mi.dwTypeData = (char*)"ReP4er - Settings";
+//	InsertMenuItem(hMenu, 0, true, &mi);
 	
 
 	if (!parentMenuHandle)
