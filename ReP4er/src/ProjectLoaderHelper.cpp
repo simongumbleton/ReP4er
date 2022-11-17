@@ -6,6 +6,7 @@
 #include "reaper_plugin_functions.h"
 #include "reaperHelpers.h"
 #include "p4v_helper.h"
+#include "platformhelpers.h"
 #include <cstdio>
 
 #define VERSION_STRING "1.0.0"
@@ -56,6 +57,10 @@ void activeProjectCheck()
     {
         std::string newCurrentProj = GetCurrentReaperProject();
         if (newCurrentProj.empty())
+        {
+            return;
+        }
+        if (!PLATFORMHELPERS::ends_with(newCurrentProj, ".rpp"))
         {
             return;
         }
