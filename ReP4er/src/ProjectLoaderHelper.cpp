@@ -11,7 +11,7 @@
 
 #define VERSION_STRING "1.0.0"
 
-#define SECTION_ID "reP4er"
+#define SECTION_ID "ReaP4orce"
 #define KEY_ID "onprojectload"
 #define KEY_FM_ID "onprojectload_frontmost"
 

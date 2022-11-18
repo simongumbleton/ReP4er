@@ -47,9 +47,9 @@ std::unique_ptr<juce::DocumentWindow>currentActiveWindow;
 bool WindowStatus = false;
 juce::DocumentWindow* currentWindow = nullptr;
 
-gaccel_register_t Checkout = { { 0, 0, 0 }, "ReP4er - Checkout all Open Projects" };
-gaccel_register_t Submit = { { 0, 0, 0 }, "ReP4er - Save, Reconcile, Submit and Close all Open Projects" };
-gaccel_register_t Settings = { { 0, 0, 0 }, "ReP4er - Settings" };
+gaccel_register_t Checkout = { { 0, 0, 0 }, "ReaP4orce - Checkout all Open Projects" };
+gaccel_register_t Submit = { { 0, 0, 0 }, "ReaP4orce - Save, Reconcile, Submit and Close all Open Projects" };
+gaccel_register_t Settings = { { 0, 0, 0 }, "ReaP4orce - Settings" };
 
 
 bool HookCommandProc(int command, int flag);
@@ -78,9 +78,9 @@ extern "C"
 			}
 			int regerrcnt = 0;
 			//Register a custom command ID for an action
-			REGISTER_AND_CHKERROR(Checkout.accel.cmd, "command_id", "ReP4er - Checkout all Open Projects");
-			REGISTER_AND_CHKERROR(Submit.accel.cmd, "command_id", "ReP4er - Save, Reconcile, Submit and Close all Open Projects");
-			REGISTER_AND_CHKERROR(Settings.accel.cmd, "command_id", "ReP4er - Settings");
+			REGISTER_AND_CHKERROR(Checkout.accel.cmd, "command_id", "ReaP4orce - Checkout all Open Projects");
+			REGISTER_AND_CHKERROR(Submit.accel.cmd, "command_id", "ReaP4orce - Save, Reconcile, Submit and Close all Open Projects");
+			REGISTER_AND_CHKERROR(Settings.accel.cmd, "command_id", "ReaP4orce - Settings");
 
 			//register our custom actions
 			plugin_register("gaccel", &Checkout.accel);
@@ -390,7 +390,7 @@ void LaunchCheckout()
 			P4V::SetCWD(dir.string());
 			if (P4V::checkForP4Config() && (P4V::login()))
 			{
-				int cl = P4V::createChangelist("ReP4er: " + projName);
+				int cl = P4V::createChangelist("ReaP4orce: " + projName);
 				trackedChangeLists.insert({ cl, dir.string() });
 				P4V::checkoutDirectory(dir.string(),"", cl);
 				P4V::reconcileDirectory(dir.string(), ".rpp", cl);
@@ -418,7 +418,7 @@ void CheckoutCurrentProject()
 		P4V::SetCWD(dir.string());
 		if (P4V::checkForP4Config() && (P4V::login()))
 		{
-			int cl = P4V::createChangelist("ReP4er: " + projName);
+			int cl = P4V::createChangelist("ReaP4orce: " + projName);
 			trackedChangeLists.insert({ cl, dir.string() });
 			P4V::checkoutDirectory(dir.string(),"",cl);
 			P4V::reconcileDirectory(dir.string(), ".rpp", cl);
@@ -531,16 +531,16 @@ static void AddCustomMenuItems(HMENU parentMenuHandle)
 
 	// add each command to the popupmenu
 	mi.wID = Submit.accel.cmd;
-	mi.dwTypeData = (char*)"ReP4er - Save, Reconcile, Submit and Close all Open Projects";
+	mi.dwTypeData = (char*)"ReaP4orce - Save, Reconcile, Submit and Close all Open Projects";
 	InsertMenuItem(hMenu, 0, true, &mi);
 
 	mi.wID = Checkout.accel.cmd;
-	mi.dwTypeData = (char*)"ReP4er - Checkout all Open Projects";
+	mi.dwTypeData = (char*)"ReaP4orce - Checkout all Open Projects";
 	InsertMenuItem(hMenu, 0, true, &mi);
 
 // Disable settings menu item while its WIP
 //	mi.wID = Settings.accel.cmd;
-//	mi.dwTypeData = (char*)"ReP4er - Settings";
+//	mi.dwTypeData = (char*)"ReaP4orce - Settings";
 //	InsertMenuItem(hMenu, 0, true, &mi);
 	
 
@@ -551,6 +551,6 @@ static void AddCustomMenuItems(HMENU parentMenuHandle)
 
 	mi.fMask = MIIM_SUBMENU | MIIM_TYPE;
 	mi.hSubMenu = hMenu;
-	mi.dwTypeData = (char*)"ReP4er";
+	mi.dwTypeData = (char*)"ReaP4orce";
 	InsertMenuItem(parentMenuHandle, GetMenuItemCount(parentMenuHandle) - 1, TRUE, &mi);
 }

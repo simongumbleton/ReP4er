@@ -12,7 +12,7 @@ public:
 	{
 			
 	//	txt_pluginVersion->setText(GetPluginVersionString(), juce::NotificationType::dontSendNotification);
-		statusLabel->setText("ReP4er - Settings",juce::NotificationType::dontSendNotification);
+		statusLabel->setText("ReaP4orce - Settings",juce::NotificationType::dontSendNotification);
 		addAndMakeVisible(statusLabel);
 
 		setSize(500, 500);
