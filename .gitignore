@@ -134,3 +134,4 @@ JUCE/Builds/VisualStudio2022/x64/Debug/Static Library/include_juce_core.obj
 .vs/ReP4er/v16/ipch/AutoPCH/9e007ac590de6824/MAIN.ipch
 .vs/ReP4er/v16/ipch/AutoPCH/40db13d7ca9d7576/P4V_HELPER.ipch
 .vs/ReP4er/v16/ipch/AutoPCH/2bfabf72ca3ff1a6/MAIN.ipch
+*.ipch
